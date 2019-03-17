@@ -1,0 +1,10 @@
+[{
+  "modid": "customcapacitors",
+  "name": "Custom Capacitors",
+  "description": "Fully customizable capacitors!",
+  "version": "0.3",
+  "mcversion": "1.12.2",
+  "authorList": ["ProspectPyxis"],
+  "requiredMods": ["pyxislib"],
+  "dependencies": ["pyxislib"]
+}]

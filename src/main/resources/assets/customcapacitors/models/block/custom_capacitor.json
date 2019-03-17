@@ -1,0 +1,44 @@
+{   "parent": "minecraft:block/block",
+    "elements": [
+        {   "from": [ 0, 0, 0 ],
+            "to": [ 16, 16, 16 ],
+            "faces": {
+                "down":  { "uv": [ 0, 0, 16, 16 ], "texture": "#base", "cullface": "down", "tintindex": 0 },
+                "up":    { "uv": [ 0, 0, 16, 16 ], "texture": "#base", "cullface": "up", "tintindex": 0 },
+                "north": { "uv": [ 0, 0, 16, 16 ], "texture": "#base", "cullface": "north", "tintindex": 0 },
+                "south": { "uv": [ 0, 0, 16, 16 ], "texture": "#base", "cullface": "south", "tintindex": 0 },
+                "west":  { "uv": [ 0, 0, 16, 16 ], "texture": "#base", "cullface": "west", "tintindex": 0 },
+                "east":  { "uv": [ 0, 0, 16, 16 ], "texture": "#base", "cullface": "east", "tintindex": 0 }
+            }
+        },
+        {   "from": [ 0, 0, 0 ],
+            "to": [ 16, 16, 16 ],
+            "faces": {
+                "down":  { "uv": [ 0, 0, 16, 16 ], "texture": "#trim", "cullface": "down", "tintindex": 1 },
+                "up":    { "uv": [ 0, 0, 16, 16 ], "texture": "#trim", "cullface": "up", "tintindex": 1 },
+                "north": { "uv": [ 0, 0, 16, 16 ], "texture": "#trim", "cullface": "north", "tintindex": 1 },
+                "south": { "uv": [ 0, 0, 16, 16 ], "texture": "#trim", "cullface": "south", "tintindex": 1},
+                "west":  { "uv": [ 0, 0, 16, 16 ], "texture": "#trim", "cullface": "west", "tintindex": 1 },
+                "east":  { "uv": [ 0, 0, 16, 16 ], "texture": "#trim", "cullface": "east", "tintindex": 1 }
+            }
+        },
+		{   "from": [ 0, 0, 0 ],
+            "to": [ 16, 16, 16 ],
+            "faces": {
+                "down":  { "uv": [ 0, 0, 16, 16 ], "texture": "#input",  "cullface": "down" },
+                "up":    { "uv": [ 0, 0, 16, 16 ], "texture": "#output", "cullface": "up" },
+                "north": { "uv": [ 0, 0, 16, 16 ], "texture": "#input",  "cullface": "north" },
+                "south": { "uv": [ 0, 0, 16, 16 ], "texture": "#input",  "cullface": "south" },
+                "west":  { "uv": [ 0, 0, 16, 16 ], "texture": "#input",  "cullface": "west" },
+                "east":  { "uv": [ 0, 0, 16, 16 ], "texture": "#input",  "cullface": "east" }
+            }
+        }
+    ],
+	"textures": {
+		"particle": "customcapacitors:blocks/capacitor_particles",
+        "base": "customcapacitors:blocks/capacitor_base",
+        "trim": "customcapacitors:blocks/capacitor_trim",
+		"input": "customcapacitors:blocks/capacitor_input_side_overlay",
+		"output": "customcapacitors:blocks/capacitor_output_side_overlay"
+    }
+}

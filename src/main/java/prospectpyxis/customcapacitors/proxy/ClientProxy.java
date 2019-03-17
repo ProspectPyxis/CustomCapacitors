@@ -1,13 +1,15 @@
 package prospectpyxis.customcapacitors.proxy;
 
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.item.Item;
+import net.minecraftforge.client.model.ModelLoader;
+import prospectpyxis.customcapacitors.CustomCapacitors;
 
 public class ClientProxy extends CommonProxy {
 
     @Override
-    public void init(FMLInitializationEvent event) {
-        super.init(event);
-        // BlockColors colors = Minecraft.getMinecraft().getBlockColors();
-        // colors.registerBlockColorHandler(new ColorCapacitor(), new BlockCapacitor());
+    public void registerItemRenderer(Item item, int meta, String id) {
+        ModelLoader.setCustomModelResourceLocation(item, meta, new ModelResourceLocation(CustomCapacitors.modid + ":" + id, "inventory"));
     }
 }

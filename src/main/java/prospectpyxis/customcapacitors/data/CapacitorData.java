@@ -4,15 +4,19 @@ import com.google.gson.annotations.SerializedName;
 
 public class CapacitorData {
 
-    public String id;
+    public String id = "test_capacitor";
 
     @SerializedName("display_name")
-    public String displayName;
-    public int capacity;
-    @SerializedName("max_transfer_rate")
-    public int maxInputRate = -1;
-    public int maxOutputRate = -1;
-    public String color = "FFFFFF";
+    public String displayName = "Test";
+    public int capacity = 10000;
+    @SerializedName("max_input_rate")
+    public int maxInputRate = 100;
+    @SerializedName("max_output_rate")
+    public int maxOutputRate = 100;
+    @SerializedName("base_color")
+    public String colorBase = "00FFFF";
+    @SerializedName("trim_color")
+    public String colorTrim = "00FFFF";
     public String description;
     @SerializedName("storage_loss_type")
     public EnumLossType storageLossType = EnumLossType.NONE;
@@ -22,14 +26,27 @@ public class CapacitorData {
     public EnumLossType inputLossType = EnumLossType.NONE;
     @SerializedName("input_loss_value")
     public float inputLossValue = 0;
+    @SerializedName("retain_energy")
+    public boolean retainEnergy = false;
     @SerializedName("comparator_output")
     public boolean comparatorOutput = false;
 
     public enum EnumLossType {
-        NONE, CONSTANT, PERCENTAGE, PERCENTAGE_INVERTED
+        @SerializedName("none")
+        NONE,
+        @SerializedName("constant")
+        CONSTANT,
+        @SerializedName("percentage")
+        PERCENTAGE,
+        @SerializedName("percentage_inverted")
+        PERCENTAGE_INVERTED
     }
 
-    public int getColor() {
-        return Integer.parseInt(color, 16);
+    public int getColorBase() {
+        return Integer.parseInt(colorBase, 16);
+    }
+
+    public int getColorTrim() {
+        return Integer.parseInt(colorTrim, 16);
     }
 }
