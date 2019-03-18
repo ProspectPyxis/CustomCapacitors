@@ -15,6 +15,8 @@ import net.minecraftforge.energy.CapabilityEnergy;
 import prospectpyxis.customcapacitors.CustomCapacitors;
 import prospectpyxis.customcapacitors.block.BlockCapacitor;
 import prospectpyxis.customcapacitors.data.CapacitorData;
+import prospectpyxis.customcapacitors.network.MessageCapacitorColor;
+import prospectpyxis.customcapacitors.network.NetworkHandler;
 import prospectpyxis.customcapacitors.registry.CapacitorRegistry;
 import prospectpyxis.pyxislib.energy.EnergyManager;
 
@@ -182,5 +184,12 @@ public class TileEntityCapacitor extends TileEntity implements ITickable {
         IBlockState state = world.getBlockState(pos);
         world.notifyBlockUpdate(pos, state, state, 3);
         world.markBlockRangeForRenderUpdate(pos, pos);
+
+        NetworkHandler.INSTANCE.sendToAll(new MessageCapacitorColor(pos.toLong(), data.getColorBase(), data.getColorTrim()));
+    }
+
+    public void setColors(int base, int trim) {
+        data.colorBase = Integer.toString(base, 16);
+        data.colorTrim = Integer.toString(trim, 16);
     }
 }

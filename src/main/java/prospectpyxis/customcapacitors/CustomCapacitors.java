@@ -18,11 +18,16 @@ import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
+import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.relauncher.Side;
 import org.apache.logging.log4j.Logger;
 import prospectpyxis.customcapacitors.block.tile.TileEntityCapacitor;
 import prospectpyxis.customcapacitors.data.CapacitorData;
 import prospectpyxis.customcapacitors.item.ItemBlockCapacitor;
+import prospectpyxis.customcapacitors.network.MessageCapacitorColor;
+import prospectpyxis.customcapacitors.network.NetworkHandler;
 import prospectpyxis.customcapacitors.proxy.CommonProxy;
 import prospectpyxis.customcapacitors.registry.BlockRegisterer;
 import prospectpyxis.customcapacitors.registry.CapacitorRegistry;
@@ -65,6 +70,7 @@ public class CustomCapacitors {
     @Mod.EventHandler
     public void init(FMLInitializationEvent event) {
         CapacitorRegistry.loadCapacitors(configFolder);
+        NetworkHandler.INSTANCE.registerMessage(MessageCapacitorColor.MessageHandlerCapacitorColor.class, MessageCapacitorColor.class, NetworkHandler.id++, Side.CLIENT);
     }
 
     @Mod.EventBusSubscriber
