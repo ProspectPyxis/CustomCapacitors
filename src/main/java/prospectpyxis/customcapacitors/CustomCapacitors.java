@@ -2,32 +2,33 @@ package prospectpyxis.customcapacitors;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.color.BlockColors;
 import net.minecraft.client.renderer.color.IBlockColor;
 import net.minecraft.client.renderer.color.IItemColor;
 import net.minecraft.client.renderer.color.ItemColors;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.client.event.ModelRegistryEvent;
+import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
-import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.common.registry.GameRegistry;
-import net.minecraftforge.fml.relauncher.Side;
 import org.apache.logging.log4j.Logger;
 import prospectpyxis.customcapacitors.block.tile.TileEntityCapacitor;
+import prospectpyxis.customcapacitors.client.render.TESRCapacitor;
 import prospectpyxis.customcapacitors.data.CapacitorData;
 import prospectpyxis.customcapacitors.item.ItemBlockCapacitor;
-import prospectpyxis.customcapacitors.network.MessageCapacitorColor;
-import prospectpyxis.customcapacitors.network.NetworkHandler;
 import prospectpyxis.customcapacitors.proxy.CommonProxy;
 import prospectpyxis.customcapacitors.registry.BlockRegisterer;
 import prospectpyxis.customcapacitors.registry.CapacitorRegistry;
@@ -41,7 +42,7 @@ public class CustomCapacitors {
 
     public static final String modid = "customcapacitors";
     public static final String name = "Custom Capacitors";
-    public static final String version = "1.12.2-0.3";
+    public static final String version = "1.12.2-0.4";
     public static final String dependencies = "required-after:pyxislib;";
 
     public static Logger logger;
@@ -70,7 +71,7 @@ public class CustomCapacitors {
     @Mod.EventHandler
     public void init(FMLInitializationEvent event) {
         CapacitorRegistry.loadCapacitors(configFolder);
-        NetworkHandler.INSTANCE.registerMessage(MessageCapacitorColor.MessageHandlerCapacitorColor.class, MessageCapacitorColor.class, NetworkHandler.id++, Side.CLIENT);
+        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityCapacitor.class, new TESRCapacitor());
     }
 
     @Mod.EventBusSubscriber
@@ -89,30 +90,6 @@ public class CustomCapacitors {
         @SubscribeEvent
         public static void registerModels(ModelRegistryEvent event) {
             BlockRegisterer.registerModels();
-        }
-
-        @SubscribeEvent
-        public static void registerBlockColorHandler(ColorHandlerEvent.Block event) {
-            final BlockColors blockColors = event.getBlockColors();
-
-            final IBlockColor capacitorColorHandler = (state, worldIn, pos, tintIndex) -> {
-                if (worldIn == null || pos == null) {
-                    if (tintIndex == 0 || tintIndex == 1) return 16777215;
-                    else return 0;
-                }
-                TileEntityCapacitor tec = worldIn.getTileEntity(pos) instanceof TileEntityCapacitor ?
-                        (TileEntityCapacitor)worldIn.getTileEntity(pos) : null;
-                if (tec == null) {
-                    if (tintIndex == 0 || tintIndex == 1) return 16777215;
-                    else return 0;
-                }
-
-                if (tintIndex == 0) return tec.data.getColorBase();
-                else if (tintIndex == 1) return tec.data.getColorTrim();
-                else return 0;
-            };
-
-            blockColors.registerBlockColorHandler(capacitorColorHandler, BlockRegisterer.CAPACITOR);
         }
 
         @SubscribeEvent

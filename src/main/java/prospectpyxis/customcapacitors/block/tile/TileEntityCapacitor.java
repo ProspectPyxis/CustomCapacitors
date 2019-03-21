@@ -3,8 +3,6 @@ package prospectpyxis.customcapacitors.block.tile;
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
@@ -15,8 +13,6 @@ import net.minecraftforge.energy.CapabilityEnergy;
 import prospectpyxis.customcapacitors.CustomCapacitors;
 import prospectpyxis.customcapacitors.block.BlockCapacitor;
 import prospectpyxis.customcapacitors.data.CapacitorData;
-import prospectpyxis.customcapacitors.network.MessageCapacitorColor;
-import prospectpyxis.customcapacitors.network.NetworkHandler;
 import prospectpyxis.customcapacitors.registry.CapacitorRegistry;
 import prospectpyxis.pyxislib.energy.EnergyManager;
 
@@ -29,7 +25,6 @@ public class TileEntityCapacitor extends TileEntity implements ITickable {
     public EnergyManager eContainer = new EnergyManager(0, 0);
     public EnergyManager eReceiver = new EnergyManager(0, 0);
     public EnergyManager eExtractor = new EnergyManager(0, 0);
-
     @Override
     public void update() {
         if (world.getTotalWorldTime() % data.storageLossData.lossDelay == 0) {
@@ -61,6 +56,11 @@ public class TileEntityCapacitor extends TileEntity implements ITickable {
                             .receiveEnergy(eExtractor.extractEnergy(data.maxOutputRate, false), false);
                 }
         }
+    }
+
+    @Override
+    public boolean hasFastRenderer() {
+        return true;
     }
 
     @Override
@@ -106,90 +106,59 @@ public class TileEntityCapacitor extends TileEntity implements ITickable {
     public void readFromNBT(NBTTagCompound compound) {
         data = CapacitorRegistry.getDataById(compound.getString("capid")) == null ? new CapacitorData() : CapacitorRegistry.getDataById(compound.getString("capid"));
 
-        if (data.storageLossData.lossDelay < 1) {
-            data.storageLossData.lossDelay = 1;
-            CustomCapacitors.logger.warn("Warning! Capacitor " + data.id + " has less than 1 loss delay!");
-            CustomCapacitors.logger.warn("It will be set to 1, please change the loss delay to a positive number!");
-        }
+        if (data != null) {
+            if (data.storageLossData.lossDelay < 1) {
+                data.storageLossData.lossDelay = 1;
+                CustomCapacitors.logger.warn("Warning! Capacitor " + data.id + " has less than 1 loss delay!");
+                CustomCapacitors.logger.warn("It will be set to 1, please change the loss delay to a positive number!");
+            }
 
-        eContainer = new EnergyManager(data.capacity, data.maxInputRate, data.maxOutputRate) {
-            @Override
-            public int receiveEnergy(int maxReceive, boolean simulate) {
-                switch (data.inputLossType) {
-                    case CONSTANT:
-                        maxReceive = maxReceive - (int) Math.floor(data.inputLossValue);
-                        break;
-                    case PERCENTAGE:
-                        maxReceive = maxReceive - Math.round(maxReceive * data.inputLossValue);
-                        break;
-                    case PERCENTAGE_INVERTED:
-                        maxReceive = maxReceive - (int) ((this.maxReceive - maxReceive) * data.inputLossValue);
-                        break;
-                    default:
+            eContainer = new EnergyManager(data.capacity, data.maxInputRate, data.maxOutputRate) {
+                @Override
+                public int receiveEnergy(int maxReceive, boolean simulate) {
+                    switch (data.inputLossType) {
+                        case CONSTANT:
+                            maxReceive = maxReceive - (int) Math.floor(data.inputLossValue);
+                            break;
+                        case PERCENTAGE:
+                            maxReceive = maxReceive - Math.round(maxReceive * data.inputLossValue);
+                            break;
+                        case PERCENTAGE_INVERTED:
+                            maxReceive = maxReceive - (int) ((this.maxReceive - maxReceive) * data.inputLossValue);
+                            break;
+                        default:
+                    }
+                    return super.receiveEnergy(maxReceive, simulate);
                 }
-                return super.receiveEnergy(maxReceive, simulate);
-            }
-        };
+            };
 
-        eReceiver = new EnergyManager(0, data.maxInputRate) {
-            @Override
-            public boolean canExtract() {
-                return false;
-            }
+            eReceiver = new EnergyManager(0, data.maxInputRate) {
+                @Override
+                public boolean canExtract() {
+                    return false;
+                }
 
-            @Override
-            public int receiveEnergy(int maxReceive, boolean simulate) {
-                return eContainer.receiveEnergy(maxReceive, simulate);
-            }
-        };
+                @Override
+                public int receiveEnergy(int maxReceive, boolean simulate) {
+                    return eContainer.receiveEnergy(maxReceive, simulate);
+                }
+            };
 
-        eExtractor = new EnergyManager(0, data.maxOutputRate) {
-            @Override
-            public boolean canReceive() {
-                return false;
-            }
+            eExtractor = new EnergyManager(0, data.maxOutputRate) {
+                @Override
+                public boolean canReceive() {
+                    return false;
+                }
 
-            @Override
-            public int extractEnergy(int maxExtract, boolean simulate) {
-                return eContainer.extractEnergy(maxExtract, simulate);
-            }
-        };
+                @Override
+                public int extractEnergy(int maxExtract, boolean simulate) {
+                    return eContainer.extractEnergy(maxExtract, simulate);
+                }
+            };
+        }
 
         eContainer.setEnergy(compound.getInteger("energy"));
 
         super.readFromNBT(compound);
-
-        IBlockState state = world.getBlockState(this.pos);
-        world.notifyBlockUpdate(pos, state, state, 3);
-        world.markBlockRangeForRenderUpdate(pos, pos);
-    }
-
-    @Override
-    public SPacketUpdateTileEntity getUpdatePacket(){
-        NBTTagCompound nbt = new NBTTagCompound();
-        nbt.setString("capid", data.id);
-        return new SPacketUpdateTileEntity(getPos(), 1, nbt);
-    }
-
-    @Override
-    public NBTTagCompound getUpdateTag() {
-        return writeToNBT(new NBTTagCompound());
-    }
-
-    @Override
-    public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt){
-        super.onDataPacket(net, pkt);
-        handleUpdateTag(pkt.getNbtCompound());
-
-        IBlockState state = world.getBlockState(pos);
-        world.notifyBlockUpdate(pos, state, state, 3);
-        world.markBlockRangeForRenderUpdate(pos, pos);
-
-        NetworkHandler.INSTANCE.sendToAll(new MessageCapacitorColor(pos.toLong(), data.getColorBase(), data.getColorTrim()));
-    }
-
-    public void setColors(int base, int trim) {
-        data.colorBase = Integer.toString(base, 16);
-        data.colorTrim = Integer.toString(trim, 16);
     }
 }

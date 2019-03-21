@@ -1,34 +1,10 @@
 {
 	"forge_marker": 1,
-	"variants": {
-		"facing": {
-			"up": {
-				"model": "customcapacitors:custom_capacitor"
-			},
-			"north": {
-				"model": "customcapacitors:custom_capacitor",
-				"x": 90
-			},
-			"south": {
-				"model": "customcapacitors:custom_capacitor",
-				"x": 90,
-				"y": 180
-			},
-			"east": {
-				"model": "customcapacitors:custom_capacitor",
-				"x": 90,
-				"y": 90
-			},
-			"west": {
-				"model": "customcapacitors:custom_capacitor",
-				"x": 90,
-				"y": 270
-			},
-			"down": {
-				"model": "customcapacitors:custom_capacitor",
-				"x": 180,
-				"y": 180
-			}
-		}
+	"defaults": 
+		"textures": {
+			"particle": "customcapacitors:blocks/particle",
+			"all": "customcapacitors:blocks/capacitor_overlay"
+		},
+		"model": "minecraft:cube_all"
 	}
 }
