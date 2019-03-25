@@ -120,10 +120,7 @@ public class TileEntityCapacitor extends TileEntity implements ITickable {
     @Override
     public void readFromNBT(NBTTagCompound compound) {
         super.readFromNBT(compound);
-
-        if (CapacitorRegistry.getDataById(compound.getString("capid")) == null) {
-            CustomCapacitors.logger.warn("Warning: capid not found!");
-        }
+        
         this.data = CapacitorRegistry.getDataById(compound.getString("capid")) == null ? new CapacitorData() : CapacitorRegistry.getDataById(compound.getString("capid"));
 
         baseColor = data.getColorBase();
