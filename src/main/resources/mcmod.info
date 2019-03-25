@@ -4,6 +4,7 @@
   "description": "Fully customizable capacitors!",
   "version": "1.0.0",
   "mcversion": "1.12.2",
+  "logoFile": "assets/customcapacitors/textures/logos/customcapacitors_icon.png",
   "authorList": ["ProspectPyxis"],
   "requiredMods": ["pyxislib"],
   "dependencies": ["pyxislib"]
