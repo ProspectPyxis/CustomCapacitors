@@ -4,4 +4,26 @@ tile.customcapacitors.custom_capacitor.name=Capacitor
 
 tooltip.custom_capacitor.fallback.1=If you've obtained this without cheating this in, then something has gone wrong.
 tooltip.custom_capacitor.fallback.2=Please report to modpack maker and/or mod maker!
-tooltip.custom_capacitor.shift=%1$sHold %2$sSHIFT%3$s%1$s for more info
+
+tooltip.custom_capacitor.shift=%1$sHold %2$s%1$sSHIFT%3$s%1$s for more info
+tooltip.custom_capacitor.advanced.capacity=%1$sCapacity:%2$s %3$s FE
+tooltip.custom_capacitor.advanced.inputrate=%1$sInput:%2$s %3$s FE/t
+tooltip.custom_capacitor.advanced.outputrate=%1$sOutput:%2$s %3$s FE/t
+
+tooltip.custom_capacitor.advanced.storage_loss.none=%1$sLossless Storage
+tooltip.custom_capacitor.advanced.storage_loss.threshold.min=%1$sMin. Loss Threshold:%2$s %3$s FE
+tooltip.custom_capacitor.advanced.storage_loss.threshold.max=%1$sMax Loss Threshold:%2$s %3$s FE
+tooltip.custom_capacitor.advanced.storage_loss.constant=%1$sLossy Storage (Constant)
+tooltip.custom_capacitor.advanced.storage_loss.constant.value=%1$sLoss:%2$s %3$s FE/%4$st
+tooltip.custom_capacitor.advanced.storage_loss.percentage=%1$sLossy Storage (Percentage)
+tooltip.custom_capacitor.advanced.storage_loss.percentage.value=%1$sLoss:%2$s %3$s%
+tooltip.custom_capacitor.advanced.storage_loss.percentage_inverted=%1$sLossy Storage (Inverted Percentage)
+tooltip.custom_capacitor.advanced.storage_loss.percentage_inverted.value=%1$sLoss:%2$s %3$s%
+
+tooltip.custom_capacitor.advanced.input_loss.none=%1$sLossless Input
+tooltip.custom_capacitor.advanced.input_loss.constant=%1$sLossy Input (Constant)
+tooltip.custom_capacitor.advanced.input_loss.constant.value=%1$sLoss:%2$s %3$s FE
+tooltip.custom_capacitor.advanced.input_loss.percentage=%1$sLossy Input (Percentage)
+tooltip.custom_capacitor.advanced.input_loss.percentage.value=%1$sLoss:%2$s %3$s%
+tooltip.custom_capacitor.advanced.input_loss.percentage_inverted=%1$sLossy Input (Inverted Percentage)
+tooltip.custom_capacitor.advanced.input_loss.percentage_inverted.value=%1$sLoss:%2$s %3$s%

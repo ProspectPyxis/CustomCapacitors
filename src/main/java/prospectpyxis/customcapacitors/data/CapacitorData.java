@@ -8,16 +8,16 @@ public class CapacitorData {
 
     @SerializedName("display_name")
     public String displayName = "Test";
+    public String description;
     public int capacity = 10000;
     @SerializedName("max_input_rate")
     public int maxInputRate = 100;
     @SerializedName("max_output_rate")
     public int maxOutputRate = 100;
     @SerializedName("base_color")
-    public String colorBase = "00FFFF";
+    public String colorBase = "FFFFFF";
     @SerializedName("trim_color")
-    public String colorTrim = "00FFFF";
-    public String description;
+    public String colorTrim = "FFFFFF";
     @SerializedName("storage_loss_type")
     public EnumLossType storageLossType = EnumLossType.NONE;
     @SerializedName("storage_loss_data")

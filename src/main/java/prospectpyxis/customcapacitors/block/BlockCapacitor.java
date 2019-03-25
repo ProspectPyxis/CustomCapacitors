@@ -11,6 +11,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
+import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
@@ -36,7 +37,10 @@ public class BlockCapacitor extends BlockWithTileEntity<TileEntityCapacitor> imp
         setUnlocalizedName("custom_capacitor");
         setRegistryName("custom_capacitor");
         setCreativeTab(CustomCapacitors.ctab);
-        this.setDefaultState(this.getBlockState().getBaseState().withProperty(FACING, EnumFacing.UP));
+        setDefaultState(this.getBlockState().getBaseState().withProperty(FACING, EnumFacing.UP));
+
+        setHardness(2f);
+        setResistance(10f);
     }
 
     @Override
@@ -71,6 +75,8 @@ public class BlockCapacitor extends BlockWithTileEntity<TileEntityCapacitor> imp
             NBTTagCompound data = new NBTTagCompound();
             tec.writeToNBT(data);
             data.removeTag("energy");
+            data.removeTag("baseColor");
+            data.removeTag("trimColor");
             data.removeTag("x");
             data.removeTag("y");
             data.removeTag("z");

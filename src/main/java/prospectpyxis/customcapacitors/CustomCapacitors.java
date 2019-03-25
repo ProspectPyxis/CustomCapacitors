@@ -23,12 +23,17 @@ import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
+import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.relauncher.Side;
 import org.apache.logging.log4j.Logger;
 import prospectpyxis.customcapacitors.block.tile.TileEntityCapacitor;
 import prospectpyxis.customcapacitors.client.render.TESRCapacitor;
 import prospectpyxis.customcapacitors.data.CapacitorData;
 import prospectpyxis.customcapacitors.item.ItemBlockCapacitor;
+import prospectpyxis.customcapacitors.network.MessageCapacitorColor;
+import prospectpyxis.customcapacitors.network.MessageReqCapacitorColor;
 import prospectpyxis.customcapacitors.proxy.CommonProxy;
 import prospectpyxis.customcapacitors.registry.BlockRegisterer;
 import prospectpyxis.customcapacitors.registry.CapacitorRegistry;
@@ -42,11 +47,13 @@ public class CustomCapacitors {
 
     public static final String modid = "customcapacitors";
     public static final String name = "Custom Capacitors";
-    public static final String version = "1.12.2-0.4";
-    public static final String dependencies = "required-after:pyxislib;";
+    public static final String version = "1.12.2-0.5";
+    public static final String dependencies = "required-after:pyxislib@1.12.2-1.0.0;";
 
     public static Logger logger;
     public static File configFolder;
+
+    public static SimpleNetworkWrapper NETWORKING;
 
     @SidedProxy(serverSide = "prospectpyxis.customcapacitors.proxy.ServerProxy", clientSide = "prospectpyxis.customcapacitors.proxy.ClientProxy")
     public static CommonProxy proxy;
@@ -66,6 +73,10 @@ public class CustomCapacitors {
         logger = event.getModLog();
         logger.info("Now loading " + name);
         configFolder = event.getModConfigurationDirectory();
+
+        NETWORKING = NetworkRegistry.INSTANCE.newSimpleChannel(modid);
+        NETWORKING.registerMessage(new MessageCapacitorColor.Handler(), MessageCapacitorColor.class, 0, Side.CLIENT);
+        NETWORKING.registerMessage(new MessageReqCapacitorColor.Handler(), MessageReqCapacitorColor.class, 1, Side.SERVER);
     }
 
     @Mod.EventHandler

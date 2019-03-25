@@ -3,6 +3,7 @@ package prospectpyxis.customcapacitors.block.tile;
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
@@ -10,9 +11,13 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.energy.CapabilityEnergy;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
+import org.apache.logging.log4j.Level;
 import prospectpyxis.customcapacitors.CustomCapacitors;
 import prospectpyxis.customcapacitors.block.BlockCapacitor;
 import prospectpyxis.customcapacitors.data.CapacitorData;
+import prospectpyxis.customcapacitors.network.MessageCapacitorColor;
+import prospectpyxis.customcapacitors.network.MessageReqCapacitorColor;
 import prospectpyxis.customcapacitors.registry.CapacitorRegistry;
 import prospectpyxis.pyxislib.energy.EnergyManager;
 
@@ -21,6 +26,8 @@ import javax.annotation.Nullable;
 public class TileEntityCapacitor extends TileEntity implements ITickable {
 
     public CapacitorData data = new CapacitorData();
+    public int baseColor = 0xFFFFFF;
+    public int trimColor = 0xFFFFFF;
 
     public EnergyManager eContainer = new EnergyManager(0, 0);
     public EnergyManager eReceiver = new EnergyManager(0, 0);
@@ -29,7 +36,7 @@ public class TileEntityCapacitor extends TileEntity implements ITickable {
     public void update() {
         if (world.getTotalWorldTime() % data.storageLossData.lossDelay == 0) {
             int minThreshold = data.storageLossData.minThreshold == -1 ? 0 : data.storageLossData.minThreshold;
-            int maxThreshold = data.storageLossData.maxThreshold == -1 ? eContainer.getMaxEnergyStored() + 1 : data.storageLossData.minThreshold;
+            int maxThreshold = data.storageLossData.maxThreshold == -1 ? eContainer.getMaxEnergyStored() + 1 : data.storageLossData.maxThreshold;
             if (data.storageLossType != CapacitorData.EnumLossType.NONE && eContainer.getEnergyStored() >= minThreshold && eContainer.getEnergyStored() < maxThreshold) {
                 switch (data.storageLossType) {
                     case CONSTANT:
@@ -90,6 +97,14 @@ public class TileEntityCapacitor extends TileEntity implements ITickable {
     }
 
     @Override
+    public void onLoad() {
+        if (world.isRemote) {
+            CustomCapacitors.NETWORKING.sendToServer(new MessageReqCapacitorColor(this));
+        }
+
+    }
+
+    @Override
     public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newState)
     {
         return (oldState.getBlock() != newState.getBlock());
@@ -104,7 +119,22 @@ public class TileEntityCapacitor extends TileEntity implements ITickable {
 
     @Override
     public void readFromNBT(NBTTagCompound compound) {
-        data = CapacitorRegistry.getDataById(compound.getString("capid")) == null ? new CapacitorData() : CapacitorRegistry.getDataById(compound.getString("capid"));
+        super.readFromNBT(compound);
+
+        if (CapacitorRegistry.getDataById(compound.getString("capid")) == null) {
+            CustomCapacitors.logger.warn("Warning: capid not found!");
+        }
+        this.data = CapacitorRegistry.getDataById(compound.getString("capid")) == null ? new CapacitorData() : CapacitorRegistry.getDataById(compound.getString("capid"));
+
+        baseColor = data.getColorBase();
+        trimColor = data.getColorTrim();
+
+        if (world != null && !world.isRemote) {
+            CustomCapacitors.NETWORKING.sendToAllAround(
+                    new MessageCapacitorColor(this),
+                    new NetworkRegistry.TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 64)
+            );
+        }
 
         if (data != null) {
             if (data.storageLossData.lossDelay < 1) {
@@ -156,9 +186,15 @@ public class TileEntityCapacitor extends TileEntity implements ITickable {
                 }
             };
         }
-
         eContainer.setEnergy(compound.getInteger("energy"));
 
-        super.readFromNBT(compound);
+    }
+
+
+
+    @Nullable
+    @Override
+    public SPacketUpdateTileEntity getUpdatePacket() {
+        return super.getUpdatePacket();
     }
 }

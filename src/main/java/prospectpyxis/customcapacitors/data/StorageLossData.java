@@ -13,5 +13,4 @@ public class StorageLossData {
     @SerializedName("max_threshold")
     public int maxThreshold = -1;
 
-
 }

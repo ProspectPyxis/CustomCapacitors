@@ -44,6 +44,11 @@ public class CapacitorRegistry {
         for (File ff : files) {
             try {
                 CapacitorData data = gson.fromJson(new FileReader(ff), CapacitorData.class);
+                if (data.id == null) {
+                    CustomCapacitors.logger.warn("WARNING: A capacitor in file " + ff.getName() + " does not have an id assigned!");
+                    CustomCapacitors.logger.warn("The capacitor will not be registered, please give an id value to all capacitors!");
+                    continue;
+                }
                 LOADED_CAPACITORS.add(data);
             } catch (JsonSyntaxException | JsonIOException | FileNotFoundException e) {
                 CustomCapacitors.logger.error("Error loading capacitor data: " + e.getMessage());

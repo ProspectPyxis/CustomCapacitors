@@ -26,11 +26,17 @@
             "to": [ 16, 16, 16 ],
             "faces": {
                 "down":  { "uv": [ 0, 0, 16, 16 ], "texture": "#input",  "cullface": "down" },
-                "up":    { "uv": [ 0, 0, 16, 16 ], "texture": "#output", "cullface": "up" },
+                "up":    { "uv": [ 0, 0, 16, 16 ], "texture": "#input", "cullface": "up" },
                 "north": { "uv": [ 0, 0, 16, 16 ], "texture": "#input",  "cullface": "north" },
                 "south": { "uv": [ 0, 0, 16, 16 ], "texture": "#input",  "cullface": "south" },
                 "west":  { "uv": [ 0, 0, 16, 16 ], "texture": "#input",  "cullface": "west" },
                 "east":  { "uv": [ 0, 0, 16, 16 ], "texture": "#input",  "cullface": "east" }
+            }
+        },
+		{   "from": [ 0, 0, 0 ],
+            "to": [ 16, 16, 16 ],
+            "faces": {
+                "up":    { "uv": [ 0, 0, 16, 16 ], "texture": "#output", "cullface": "up" }
             }
         }
     ],
@@ -38,7 +44,7 @@
 		"particle": "customcapacitors:blocks/capacitor_particles",
         "base": "customcapacitors:blocks/capacitor_base",
         "trim": "customcapacitors:blocks/capacitor_trim",
-		"input": "customcapacitors:blocks/capacitor_input_side_overlay",
-		"output": "customcapacitors:blocks/capacitor_output_side_overlay"
+		"input": "customcapacitors:blocks/capacitor_overlay",
+		"output": "customcapacitors:blocks/capacitor_overlay_output"
     }
 }

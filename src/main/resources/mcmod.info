@@ -2,7 +2,7 @@
   "modid": "customcapacitors",
   "name": "Custom Capacitors",
   "description": "Fully customizable capacitors!",
-  "version": "0.4",
+  "version": "0.5",
   "mcversion": "1.12.2",
   "authorList": ["ProspectPyxis"],
   "requiredMods": ["pyxislib"],
