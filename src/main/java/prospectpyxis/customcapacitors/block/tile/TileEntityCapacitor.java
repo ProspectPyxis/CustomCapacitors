@@ -137,12 +137,6 @@ public class TileEntityCapacitor extends TileEntity implements ITickable {
         }
 
         if (data != null) {
-            if (data.storageLossData.lossDelay < 1) {
-                data.storageLossData.lossDelay = 1;
-                CustomCapacitors.logger.warn("Warning! Capacitor " + data.id + " has less than 1 loss delay!");
-                CustomCapacitors.logger.warn("It will be set to 1, please change the loss delay to a positive number!");
-            }
-
             eContainer = new EnergyManager(data.capacity, data.maxInputRate, data.maxOutputRate) {
                 @Override
                 public int receiveEnergy(int maxReceive, boolean simulate) {

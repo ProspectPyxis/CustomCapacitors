@@ -50,7 +50,8 @@ public class ItemBlockCapacitor extends ItemBlock {
                 tooltip.add(I18n.format("tooltip.custom_capacitor.shift", TextFormatting.ITALIC, TextFormatting.YELLOW, TextFormatting.GRAY));
             } else {
                 tooltip.add(I18n.format("tooltip.custom_capacitor.advanced.capacity", TextFormatting.BOLD, TextFormatting.RESET, Integer.toString(data.capacity)));
-                tooltip.add(I18n.format("tooltip.custom_capacitor.advanced.inputrate", TextFormatting.BOLD, TextFormatting.RESET, Integer.toString(data.capacity)));
+                tooltip.add(I18n.format("tooltip.custom_capacitor.advanced.inputrate", TextFormatting.BOLD, TextFormatting.RESET, Integer.toString(data.maxInputRate)));
+                tooltip.add(I18n.format("tooltip.custom_capacitor.advanced.outputrate", TextFormatting.BOLD, TextFormatting.RESET, Integer.toString(data.maxOutputRate)));
 
                 DecimalFormat df = new DecimalFormat("#.###");
                 df.setRoundingMode(RoundingMode.HALF_UP);

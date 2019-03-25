@@ -19,6 +19,7 @@ public class CapacitorRegistry {
     public static Gson gson = new GsonBuilder().setLenient().setPrettyPrinting().create();
 
     public static List<CapacitorData> LOADED_CAPACITORS = new ArrayList<>();
+    public static List<String> ID_LIST = new ArrayList<>();
 
     public static CapacitorData getDataById(String id) {
         for (CapacitorData data : LOADED_CAPACITORS) {
@@ -49,7 +50,18 @@ public class CapacitorRegistry {
                     CustomCapacitors.logger.warn("The capacitor will not be registered, please give an id value to all capacitors!");
                     continue;
                 }
+                else if (ID_LIST.contains(data.id)) {
+                    CustomCapacitors.logger.warn("WARNING: Multiple capacitors have the id " + data.id + "!");
+                    CustomCapacitors.logger.warn("Please make sure every capacitor has a unique id!");
+                    continue;
+                }
+                if (data.storageLossData.lossDelay < 1) {
+                    data.storageLossData.lossDelay = 1;
+                    CustomCapacitors.logger.warn("WARNING: Capacitor " + data.id + " has less than 1 loss delay!");
+                    CustomCapacitors.logger.warn("It will be set to 1, please change the loss delay to a positive number!");
+                }
                 LOADED_CAPACITORS.add(data);
+                ID_LIST.add(data.id);
             } catch (JsonSyntaxException | JsonIOException | FileNotFoundException e) {
                 CustomCapacitors.logger.error("Error loading capacitor data: " + e.getMessage());
             }
