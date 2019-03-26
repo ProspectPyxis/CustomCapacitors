@@ -26,9 +26,17 @@ public class TESRCapacitor extends FastTESR<TileEntityCapacitor> {
         RendererUtils.renderCubeWithLighting(buffer, (float)x, (float)y, (float)z, ct, ClientProxy.ctexTrim, tec.getWorld(), state, tec.getPos());
         RendererUtils.renderCubeWithLighting(buffer, (float)x, (float)y, (float)z, new Color(255, 255, 255), ClientProxy.ctexOverlay, tec.getWorld(), state, tec.getPos());
 
-        EnumFacing isFacing = state.getValue(BlockCapacitor.FACING);
-        RendererUtils.renderFace(buffer, isFacing, (float)x, (float)y, (float)z, new Color(255, 255, 255), ClientProxy.ctexOverlayO,
-                RendererUtils.getLightMapSkyLight(state, tec.getWorld(), tec.getPos().offset(isFacing)),
-                RendererUtils.getLightMapBlockLight(state, tec.getWorld(), tec.getPos().offset(isFacing)));
+        for (EnumFacing ff : EnumFacing.values()) {
+            if (tec.FACES[ff.getIndex()] == 1) {
+                RendererUtils.renderFace(buffer, ff, (float)x, (float)y, (float)z, new Color(255, 255, 255), ClientProxy.ctexOverlayI,
+                        RendererUtils.getLightMapSkyLight(state, tec.getWorld(), tec.getPos().offset(ff)),
+                        RendererUtils.getLightMapBlockLight(state, tec.getWorld(), tec.getPos().offset(ff)));
+            }
+            else if (tec.FACES[ff.getIndex()] == 2) {
+                RendererUtils.renderFace(buffer, ff, (float)x, (float)y, (float)z, new Color(255, 255, 255), ClientProxy.ctexOverlayO,
+                        RendererUtils.getLightMapSkyLight(state, tec.getWorld(), tec.getPos().offset(ff)),
+                        RendererUtils.getLightMapBlockLight(state, tec.getWorld(), tec.getPos().offset(ff)));
+            }
+        }
     }
 }

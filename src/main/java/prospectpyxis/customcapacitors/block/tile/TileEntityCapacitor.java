@@ -1,6 +1,5 @@
 package prospectpyxis.customcapacitors.block.tile;
 
-import com.google.common.collect.ImmutableMap;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
@@ -12,12 +11,12 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
-import org.apache.logging.log4j.Level;
 import prospectpyxis.customcapacitors.CustomCapacitors;
-import prospectpyxis.customcapacitors.block.BlockCapacitor;
 import prospectpyxis.customcapacitors.data.CapacitorData;
 import prospectpyxis.customcapacitors.network.MessageCapacitorColor;
+import prospectpyxis.customcapacitors.network.MessageCapacitorFaces;
 import prospectpyxis.customcapacitors.network.MessageReqCapacitorColor;
+import prospectpyxis.customcapacitors.network.MessageReqCapacitorFaces;
 import prospectpyxis.customcapacitors.registry.CapacitorRegistry;
 import prospectpyxis.pyxislib.energy.EnergyManager;
 
@@ -32,6 +31,11 @@ public class TileEntityCapacitor extends TileEntity implements ITickable {
     public EnergyManager eContainer = new EnergyManager(0, 0);
     public EnergyManager eReceiver = new EnergyManager(0, 0);
     public EnergyManager eExtractor = new EnergyManager(0, 0);
+
+    // 0 is empty, 1 is input, 2 is output
+    // Follows standard EnumFacing indices, so order is D-U-N-S-W-E
+    public int[] FACES = new int[]{0, 0, 0, 0, 0, 0};
+
     @Override
     public void update() {
         if (world.getTotalWorldTime() % data.storageLossData.lossDelay == 0) {
@@ -54,14 +58,15 @@ public class TileEntityCapacitor extends TileEntity implements ITickable {
             }
         }
 
-        ImmutableMap blockProperties = world.getBlockState(pos).getProperties();
-        if (blockProperties.containsKey(BlockCapacitor.FACING)) {
-            EnumFacing fc = (EnumFacing)blockProperties.get(BlockCapacitor.FACING);
-                TileEntity te = world.getTileEntity(pos.offset(fc));
-                if (te != null && te.hasCapability(CapabilityEnergy.ENERGY, fc.getOpposite())) {
-                    te.getCapability(CapabilityEnergy.ENERGY, fc.getOpposite())
+        for (EnumFacing ff : EnumFacing.values()) {
+            int fi = ff.getIndex();
+            if (FACES[fi] == 2) {
+                TileEntity te = world.getTileEntity(pos.offset(ff));
+                if (te != null && te.hasCapability(CapabilityEnergy.ENERGY, ff.getOpposite())) {
+                    te.getCapability(CapabilityEnergy.ENERGY, ff.getOpposite())
                             .receiveEnergy(eExtractor.extractEnergy(data.maxOutputRate, false), false);
                 }
+            }
         }
     }
 
@@ -74,7 +79,7 @@ public class TileEntityCapacitor extends TileEntity implements ITickable {
     public boolean hasCapability(Capability<?> capability, EnumFacing facing)
     {
         if (capability == CapabilityEnergy.ENERGY) {
-            return true;
+            if (facing == null || FACES[facing.getIndex()] != 0) return true;
         }
         return super.hasCapability(capability, facing);
     }
@@ -85,13 +90,8 @@ public class TileEntityCapacitor extends TileEntity implements ITickable {
     public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing) {
         if (capability == CapabilityEnergy.ENERGY) {
             if (facing == null) return (T)eContainer;
-            ImmutableMap blockProperties = world.getBlockState(pos).getProperties();
-            if (blockProperties.containsKey(BlockCapacitor.FACING)) {
-                if (facing.equals(blockProperties.get(BlockCapacitor.FACING))) {
-                    return (T)eExtractor;
-                }
-                else return (T)eReceiver;
-            }
+            else if (FACES[facing.getIndex()] == 1) return (T)eReceiver;
+            else if (FACES[facing.getIndex()] == 2) return (T)eExtractor;
         }
         return super.getCapability(capability, facing);
     }
@@ -100,6 +100,7 @@ public class TileEntityCapacitor extends TileEntity implements ITickable {
     public void onLoad() {
         if (world.isRemote) {
             CustomCapacitors.NETWORKING.sendToServer(new MessageReqCapacitorColor(this));
+            CustomCapacitors.NETWORKING.sendToServer(new MessageReqCapacitorFaces(this));
         }
 
     }
@@ -178,14 +179,15 @@ public class TileEntityCapacitor extends TileEntity implements ITickable {
             };
         }
         eContainer.setEnergy(compound.getInteger("energy"));
-
     }
 
-
-
-    @Nullable
-    @Override
-    public SPacketUpdateTileEntity getUpdatePacket() {
-        return super.getUpdatePacket();
+    public void notifyFaceChanges() {
+        if (!world.isRemote) {
+            CustomCapacitors.NETWORKING.sendToAllAround(
+                    new MessageCapacitorFaces(this),
+                    new NetworkRegistry.TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 64)
+            );
+        }
     }
+
 }

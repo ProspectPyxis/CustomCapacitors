@@ -29,15 +29,12 @@ import javax.annotation.Nullable;
 
 public class BlockCapacitor extends BlockWithTileEntity<TileEntityCapacitor> implements IWrenchable {
 
-    public static final PropertyDirection FACING = PropertyDirection.create("facing");
-
     public BlockCapacitor() {
         super(Material.IRON);
 
         setUnlocalizedName("custom_capacitor");
         setRegistryName("custom_capacitor");
         setCreativeTab(CustomCapacitors.ctab);
-        setDefaultState(this.getBlockState().getBaseState().withProperty(FACING, EnumFacing.UP));
 
         setHardness(2f);
         setResistance(10f);
@@ -46,6 +43,12 @@ public class BlockCapacitor extends BlockWithTileEntity<TileEntityCapacitor> imp
     @Override
     public BlockRenderLayer getBlockLayer() {
         return BlockRenderLayer.CUTOUT_MIPPED;
+    }
+
+    @Override
+    @SuppressWarnings("deprecation")
+    public EnumBlockRenderType getRenderType(IBlockState state) {
+        return EnumBlockRenderType.INVISIBLE;
     }
 
     @Override
@@ -105,7 +108,16 @@ public class BlockCapacitor extends BlockWithTileEntity<TileEntityCapacitor> imp
 
     @Override
     public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
-        worldIn.setBlockState(pos, state.withProperty(FACING, EnumFacing.getDirectionFromEntityLiving(pos, placer)), 3);
+        EnumFacing facing = EnumFacing.getDirectionFromEntityLiving(pos, placer);
+
+        if (placer.isSneaking()) facing = facing.getOpposite();
+
+        TileEntityCapacitor tec = worldIn.getTileEntity(pos) instanceof TileEntityCapacitor ? (TileEntityCapacitor)worldIn.getTileEntity(pos) : null;
+        if (tec != null) {
+            tec.FACES[facing.getIndex()] = 2;
+            tec.FACES[facing.getOpposite().getIndex()] = 1;
+            tec.notifyFaceChanges();
+        }
     }
 
     @Override
@@ -113,7 +125,6 @@ public class BlockCapacitor extends BlockWithTileEntity<TileEntityCapacitor> imp
         for (CapacitorData d : CapacitorRegistry.LOADED_CAPACITORS) {
             NBTTagCompound data = new NBTTagCompound();
             NBTTagCompound nbt = new NBTTagCompound();
-
             data.setString("capid", d.id);
             nbt.setTag("BlockEntityTag", data);
 
@@ -126,27 +137,14 @@ public class BlockCapacitor extends BlockWithTileEntity<TileEntityCapacitor> imp
 
     @Override
     public void applyWrench(World worldIn, BlockPos pos, EnumFacing facing, boolean isPlayerSneaking) {
-        if (!isPlayerSneaking) {
-            worldIn.setBlockState(pos, worldIn.getBlockState(pos).withProperty(BlockCapacitor.FACING, facing), 3);
-        } else {
-            worldIn.setBlockState(pos, worldIn.getBlockState(pos).withProperty(BlockCapacitor.FACING, facing.getOpposite()), 3);
+        TileEntityCapacitor tec = worldIn.getTileEntity(pos) instanceof TileEntityCapacitor ? (TileEntityCapacitor)worldIn.getTileEntity(pos) : null;
+        if (tec == null) return;
+        if (isPlayerSneaking) {
+            facing = facing.getOpposite();
         }
-    }
-
-    @Override
-    @SuppressWarnings("deprecation")
-    public IBlockState getStateFromMeta(int meta) {
-        return getDefaultState().withProperty(FACING, EnumFacing.getFront(meta));
-    }
-
-    @Override
-    public int getMetaFromState(IBlockState state) {
-        return state.getValue(FACING).getIndex();
-    }
-
-    @Override
-    protected BlockStateContainer createBlockState() {
-        return new BlockStateContainer(this, FACING);
+        if (tec.FACES[facing.getIndex()] == 0) tec.FACES[facing.getIndex()] = 1;
+        else if (tec.FACES[facing.getIndex()] == 1) tec.FACES[facing.getIndex()] = 2;
+        else if (tec.FACES[facing.getIndex()] == 2) tec.FACES[facing.getIndex()] = 0;
     }
 
     @Override

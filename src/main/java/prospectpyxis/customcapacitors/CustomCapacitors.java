@@ -33,7 +33,9 @@ import prospectpyxis.customcapacitors.client.render.TESRCapacitor;
 import prospectpyxis.customcapacitors.data.CapacitorData;
 import prospectpyxis.customcapacitors.item.ItemBlockCapacitor;
 import prospectpyxis.customcapacitors.network.MessageCapacitorColor;
+import prospectpyxis.customcapacitors.network.MessageCapacitorFaces;
 import prospectpyxis.customcapacitors.network.MessageReqCapacitorColor;
+import prospectpyxis.customcapacitors.network.MessageReqCapacitorFaces;
 import prospectpyxis.customcapacitors.proxy.CommonProxy;
 import prospectpyxis.customcapacitors.registry.BlockRegisterer;
 import prospectpyxis.customcapacitors.registry.CapacitorRegistry;
@@ -47,8 +49,8 @@ public class CustomCapacitors {
 
     public static final String modid = "customcapacitors";
     public static final String name = "Custom Capacitors";
-    public static final String version = "1.12.2-1.0.0";
-    public static final String dependencies = "required-after:pyxislib@1.12.2-1.0.0;";
+    public static final String version = "1.12.2-1.1.0";
+    public static final String dependencies = "required-after:pyxislib@1.12.2-1.0.2;";
 
     public static Logger logger;
     public static File configFolder;
@@ -77,6 +79,8 @@ public class CustomCapacitors {
         NETWORKING = NetworkRegistry.INSTANCE.newSimpleChannel(modid);
         NETWORKING.registerMessage(new MessageCapacitorColor.Handler(), MessageCapacitorColor.class, 0, Side.CLIENT);
         NETWORKING.registerMessage(new MessageReqCapacitorColor.Handler(), MessageReqCapacitorColor.class, 1, Side.SERVER);
+        NETWORKING.registerMessage(new MessageCapacitorFaces.Handler(), MessageCapacitorFaces.class, 2, Side.CLIENT);
+        NETWORKING.registerMessage(new MessageReqCapacitorFaces.Handler(), MessageReqCapacitorFaces.class, 3, Side.SERVER);
     }
 
     @Mod.EventHandler

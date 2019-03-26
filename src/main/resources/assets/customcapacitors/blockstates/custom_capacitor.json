@@ -3,30 +3,11 @@
 	"defaults": {
 		"model": "cube_all",
 		"textures": {
-			"all": "customcapacitors:blocks/capacitor_overlay",
+			"all": "pyxislib:blocks/invisible",
 			"particle": "customcapacitors:blocks/capacitor_empty"
 		}
 	},
 	"variants": {
-		"facing": {
-			"up": {
-				"y": 0
-			},
-			"down": {
-				"y": 0
-			},
-			"north": {
-				"y": 0
-			},
-			"south": {
-				"y": 0
-			},
-			"east": {
-				"y": 0
-			},
-			"west": {
-				"y": 0
-			}
-		}
+		"normal": { "y": 0 }
 	}
 }

@@ -25,18 +25,19 @@
 		{   "from": [ 0, 0, 0 ],
             "to": [ 16, 16, 16 ],
             "faces": {
-                "down":  { "uv": [ 0, 0, 16, 16 ], "texture": "#input",  "cullface": "down" },
-                "up":    { "uv": [ 0, 0, 16, 16 ], "texture": "#input", "cullface": "up" },
-                "north": { "uv": [ 0, 0, 16, 16 ], "texture": "#input",  "cullface": "north" },
-                "south": { "uv": [ 0, 0, 16, 16 ], "texture": "#input",  "cullface": "south" },
-                "west":  { "uv": [ 0, 0, 16, 16 ], "texture": "#input",  "cullface": "west" },
-                "east":  { "uv": [ 0, 0, 16, 16 ], "texture": "#input",  "cullface": "east" }
+                "down":  { "uv": [ 0, 0, 16, 16 ], "texture": "#overlay",  "cullface": "down" },
+                "up":    { "uv": [ 0, 0, 16, 16 ], "texture": "#overlay", "cullface": "up" },
+                "north": { "uv": [ 0, 0, 16, 16 ], "texture": "#overlay",  "cullface": "north" },
+                "south": { "uv": [ 0, 0, 16, 16 ], "texture": "#overlay",  "cullface": "south" },
+                "west":  { "uv": [ 0, 0, 16, 16 ], "texture": "#overlay",  "cullface": "west" },
+                "east":  { "uv": [ 0, 0, 16, 16 ], "texture": "#overlay",  "cullface": "east" }
             }
         },
 		{   "from": [ 0, 0, 0 ],
             "to": [ 16, 16, 16 ],
             "faces": {
-                "up":    { "uv": [ 0, 0, 16, 16 ], "texture": "#output", "cullface": "up" }
+                "up":    { "uv": [ 0, 0, 16, 16 ], "texture": "#output", "cullface": "up" },
+				"down":    { "uv": [ 0, 0, 16, 16 ], "texture": "#input", "cullface": "up" }
             }
         }
     ],
@@ -44,7 +45,8 @@
 		"particle": "customcapacitors:blocks/capacitor_particles",
         "base": "customcapacitors:blocks/capacitor_base",
         "trim": "customcapacitors:blocks/capacitor_trim",
-		"input": "customcapacitors:blocks/capacitor_overlay",
+		"overlay": "customcapacitors:blocks/capacitor_overlay",
+		"input": "customcapacitors:blocks/capacitor_overlay_input",
 		"output": "customcapacitors:blocks/capacitor_overlay_output"
     }
 }

@@ -22,6 +22,7 @@ public class ClientProxy extends CommonProxy {
     public static TextureAtlasSprite ctexBase;
     public static TextureAtlasSprite ctexTrim;
     public static TextureAtlasSprite ctexOverlay;
+    public static TextureAtlasSprite ctexOverlayI;
     public static TextureAtlasSprite ctexOverlayO;
 
     @SubscribeEvent
@@ -30,6 +31,7 @@ public class ClientProxy extends CommonProxy {
             ctexBase = event.getMap().registerSprite(new ResourceLocation(CustomCapacitors.modid + ":blocks/capacitor_base"));
             ctexTrim = event.getMap().registerSprite(new ResourceLocation(CustomCapacitors.modid + ":blocks/capacitor_trim"));
             ctexOverlay = event.getMap().registerSprite(new ResourceLocation(CustomCapacitors.modid + ":blocks/capacitor_overlay"));
+            ctexOverlayI = event.getMap().registerSprite(new ResourceLocation(CustomCapacitors.modid + ":blocks/capacitor_overlay_input"));
             ctexOverlayO = event.getMap().registerSprite(new ResourceLocation(CustomCapacitors.modid + ":blocks/capacitor_overlay_output"));
         }
     }
