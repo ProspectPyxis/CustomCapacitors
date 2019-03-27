@@ -1,8 +1,6 @@
 package prospectpyxis.customcapacitors.block;
 
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.PropertyDirection;
-import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
@@ -114,8 +112,8 @@ public class BlockCapacitor extends BlockWithTileEntity<TileEntityCapacitor> imp
 
         TileEntityCapacitor tec = worldIn.getTileEntity(pos) instanceof TileEntityCapacitor ? (TileEntityCapacitor)worldIn.getTileEntity(pos) : null;
         if (tec != null) {
-            tec.FACES[facing.getIndex()] = 2;
-            tec.FACES[facing.getOpposite().getIndex()] = 1;
+            tec.input_faces[facing.getIndex()] = 2;
+            tec.input_faces[facing.getOpposite().getIndex()] = 1;
             tec.notifyFaceChanges();
         }
     }
@@ -142,9 +140,9 @@ public class BlockCapacitor extends BlockWithTileEntity<TileEntityCapacitor> imp
         if (isPlayerSneaking) {
             facing = facing.getOpposite();
         }
-        if (tec.FACES[facing.getIndex()] == 0) tec.FACES[facing.getIndex()] = 1;
-        else if (tec.FACES[facing.getIndex()] == 1) tec.FACES[facing.getIndex()] = 2;
-        else if (tec.FACES[facing.getIndex()] == 2) tec.FACES[facing.getIndex()] = 0;
+        if (tec.input_faces[facing.getIndex()] == 0) tec.input_faces[facing.getIndex()] = 1;
+        else if (tec.input_faces[facing.getIndex()] == 1) tec.input_faces[facing.getIndex()] = 2;
+        else if (tec.input_faces[facing.getIndex()] == 2) tec.input_faces[facing.getIndex()] = 0;
     }
 
     @Override

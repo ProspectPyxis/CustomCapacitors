@@ -49,7 +49,7 @@ public class CustomCapacitors {
 
     public static final String modid = "customcapacitors";
     public static final String name = "Custom Capacitors";
-    public static final String version = "1.12.2-1.1.0";
+    public static final String version = "1.12.2-1.1.1";
     public static final String dependencies = "required-after:pyxislib@1.12.2-1.0.2;";
 
     public static Logger logger;

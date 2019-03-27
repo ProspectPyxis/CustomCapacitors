@@ -2,7 +2,6 @@ package prospectpyxis.customcapacitors.block.tile;
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
@@ -10,6 +9,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.energy.CapabilityEnergy;
+import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import prospectpyxis.customcapacitors.CustomCapacitors;
 import prospectpyxis.customcapacitors.data.CapacitorData;
@@ -34,7 +34,8 @@ public class TileEntityCapacitor extends TileEntity implements ITickable {
 
     // 0 is empty, 1 is input, 2 is output
     // Follows standard EnumFacing indices, so order is D-U-N-S-W-E
-    public int[] FACES = new int[]{0, 0, 0, 0, 0, 0};
+    public int[] input_faces = new int[]{0, 0, 0, 0, 0, 0};
+    public boolean[] face_connect = new boolean[]{false, false, false, false, false, false};
 
     @Override
     public void update() {
@@ -60,11 +61,12 @@ public class TileEntityCapacitor extends TileEntity implements ITickable {
 
         for (EnumFacing ff : EnumFacing.values()) {
             int fi = ff.getIndex();
-            if (FACES[fi] == 2) {
+            if (input_faces[fi] == 2) {
                 TileEntity te = world.getTileEntity(pos.offset(ff));
                 if (te != null && te.hasCapability(CapabilityEnergy.ENERGY, ff.getOpposite())) {
-                    te.getCapability(CapabilityEnergy.ENERGY, ff.getOpposite())
-                            .receiveEnergy(eExtractor.extractEnergy(data.maxOutputRate, false), false);
+                    IEnergyStorage oCap = te.getCapability(CapabilityEnergy.ENERGY, ff.getOpposite());
+                    int energySent = oCap.receiveEnergy(data.maxOutputRate, false);
+                    eExtractor.extractEnergy(energySent, false);
                 }
             }
         }
@@ -79,7 +81,7 @@ public class TileEntityCapacitor extends TileEntity implements ITickable {
     public boolean hasCapability(Capability<?> capability, EnumFacing facing)
     {
         if (capability == CapabilityEnergy.ENERGY) {
-            if (facing == null || FACES[facing.getIndex()] != 0) return true;
+            if (facing == null || input_faces[facing.getIndex()] != 0) return true;
         }
         return super.hasCapability(capability, facing);
     }
@@ -90,8 +92,8 @@ public class TileEntityCapacitor extends TileEntity implements ITickable {
     public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing) {
         if (capability == CapabilityEnergy.ENERGY) {
             if (facing == null) return (T)eContainer;
-            else if (FACES[facing.getIndex()] == 1) return (T)eReceiver;
-            else if (FACES[facing.getIndex()] == 2) return (T)eExtractor;
+            else if (input_faces[facing.getIndex()] == 1) return (T)eReceiver;
+            else if (input_faces[facing.getIndex()] == 2) return (T)eExtractor;
         }
         return super.getCapability(capability, facing);
     }

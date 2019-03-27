@@ -2,7 +2,7 @@
   "modid": "customcapacitors",
   "name": "Custom Capacitors",
   "description": "Fully customizable capacitors!",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "mcversion": "1.12.2",
   "logoFile": "assets/customcapacitors/textures/logos/customcapacitors_icon.png",
   "authorList": ["ProspectPyxis"],

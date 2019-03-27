@@ -4,11 +4,12 @@ import net.minecraft.block.Block;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
-import prospectpyxis.customcapacitors.CustomCapacitors;
 import prospectpyxis.customcapacitors.ModSettings;
 import prospectpyxis.customcapacitors.data.CapacitorData;
 import prospectpyxis.customcapacitors.registry.CapacitorRegistry;
@@ -27,6 +28,17 @@ public class ItemBlockCapacitor extends ItemBlock {
         setUnlocalizedName(b.getUnlocalizedName());
         setRegistryName(b.getRegistryName());
     }
+
+    /*
+    @Override
+    public void onUpdate(ItemStack stack, World worldIn, Entity entityIn, int itemSlot, boolean isSelected) {
+        if (!(entityIn instanceof EntityPlayer)) return;
+        EntityPlayer player = (EntityPlayer) entityIn;
+        for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
+
+        }
+    }
+    */
 
     @Override
     public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {

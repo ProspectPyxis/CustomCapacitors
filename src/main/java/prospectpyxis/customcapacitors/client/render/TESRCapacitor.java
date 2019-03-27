@@ -6,7 +6,6 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.animation.FastTESR;
 import org.lwjgl.util.Color;
-import prospectpyxis.customcapacitors.block.BlockCapacitor;
 import prospectpyxis.customcapacitors.block.tile.TileEntityCapacitor;
 import prospectpyxis.customcapacitors.proxy.ClientProxy;
 import prospectpyxis.pyxislib.client.RendererUtils;
@@ -27,12 +26,14 @@ public class TESRCapacitor extends FastTESR<TileEntityCapacitor> {
         RendererUtils.renderCubeWithLighting(buffer, (float)x, (float)y, (float)z, new Color(255, 255, 255), ClientProxy.ctexOverlay, tec.getWorld(), state, tec.getPos());
 
         for (EnumFacing ff : EnumFacing.values()) {
-            if (tec.FACES[ff.getIndex()] == 1) {
+            int fi = ff.getIndex();
+            if (tec.face_connect[fi]) continue;
+            if (tec.input_faces[fi] == 1) {
                 RendererUtils.renderFace(buffer, ff, (float)x, (float)y, (float)z, new Color(255, 255, 255), ClientProxy.ctexOverlayI,
                         RendererUtils.getLightMapSkyLight(state, tec.getWorld(), tec.getPos().offset(ff)),
                         RendererUtils.getLightMapBlockLight(state, tec.getWorld(), tec.getPos().offset(ff)));
             }
-            else if (tec.FACES[ff.getIndex()] == 2) {
+            else if (tec.input_faces[fi] == 2) {
                 RendererUtils.renderFace(buffer, ff, (float)x, (float)y, (float)z, new Color(255, 255, 255), ClientProxy.ctexOverlayO,
                         RendererUtils.getLightMapSkyLight(state, tec.getWorld(), tec.getPos().offset(ff)),
                         RendererUtils.getLightMapBlockLight(state, tec.getWorld(), tec.getPos().offset(ff)));
