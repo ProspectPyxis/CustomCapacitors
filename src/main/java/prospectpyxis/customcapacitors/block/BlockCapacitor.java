@@ -16,6 +16,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.energy.CapabilityEnergy;
 import prospectpyxis.customcapacitors.CustomCapacitors;
 import prospectpyxis.customcapacitors.block.tile.TileEntityCapacitor;
 import prospectpyxis.customcapacitors.data.CapacitorData;
@@ -57,6 +58,7 @@ public class BlockCapacitor extends BlockWithTileEntity<TileEntityCapacitor> imp
             NBTTagCompound data = new NBTTagCompound();
             tec.writeToNBT(data);
             if (!tec.data.retainEnergy) data.removeTag("energy");
+            data.removeTag("ioFaces");
             data.removeTag("x");
             data.removeTag("y");
             data.removeTag("z");
@@ -73,21 +75,19 @@ public class BlockCapacitor extends BlockWithTileEntity<TileEntityCapacitor> imp
         TileEntityCapacitor tec = world.getTileEntity(pos) instanceof TileEntityCapacitor ? (TileEntityCapacitor)world.getTileEntity(pos) : null;
         if (tec != null) {
             ItemStack item = new ItemStack(this);
-            NBTTagCompound data = new NBTTagCompound();
-            tec.writeToNBT(data);
+            NBTTagCompound temp = new NBTTagCompound();
+            tec.writeToNBT(temp);
+            NBTTagCompound data = temp.copy();
+            // CustomCapacitors.logger.info(data.getString("capid"));
             data.removeTag("energy");
-            data.removeTag("baseColor");
-            data.removeTag("trimColor");
-            data.removeTag("x");
-            data.removeTag("y");
-            data.removeTag("z");
+            data.removeTag("ioFaces");
             data.removeTag("id");
             NBTTagCompound nbt = new NBTTagCompound();
             nbt.setTag("BlockEntityTag", data);
             item.setTagCompound(nbt);
             return item;
         }
-        return null;
+        return ItemStack.EMPTY;
     }
 
     @Override
@@ -112,9 +112,13 @@ public class BlockCapacitor extends BlockWithTileEntity<TileEntityCapacitor> imp
 
         TileEntityCapacitor tec = worldIn.getTileEntity(pos) instanceof TileEntityCapacitor ? (TileEntityCapacitor)worldIn.getTileEntity(pos) : null;
         if (tec != null) {
-            tec.input_faces[facing.getIndex()] = 2;
-            tec.input_faces[facing.getOpposite().getIndex()] = 1;
+            tec.io_faces[facing.getIndex()] = 2;
+            tec.io_faces[facing.getOpposite().getIndex()] = 1;
             tec.notifyFaceChanges();
+
+            if (stack.hasCapability(CapabilityEnergy.ENERGY, null)) {
+                tec.eContainer.setEnergy(stack.getCapability(CapabilityEnergy.ENERGY, null).getEnergyStored());
+            }
         }
     }
 
@@ -140,9 +144,9 @@ public class BlockCapacitor extends BlockWithTileEntity<TileEntityCapacitor> imp
         if (isPlayerSneaking) {
             facing = facing.getOpposite();
         }
-        if (tec.input_faces[facing.getIndex()] == 0) tec.input_faces[facing.getIndex()] = 1;
-        else if (tec.input_faces[facing.getIndex()] == 1) tec.input_faces[facing.getIndex()] = 2;
-        else if (tec.input_faces[facing.getIndex()] == 2) tec.input_faces[facing.getIndex()] = 0;
+        if (tec.io_faces[facing.getIndex()] == 0) tec.io_faces[facing.getIndex()] = 1;
+        else if (tec.io_faces[facing.getIndex()] == 1) tec.io_faces[facing.getIndex()] = 2;
+        else if (tec.io_faces[facing.getIndex()] == 2) tec.io_faces[facing.getIndex()] = 0;
     }
 
     @Override

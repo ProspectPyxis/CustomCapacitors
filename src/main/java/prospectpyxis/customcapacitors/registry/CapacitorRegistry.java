@@ -4,6 +4,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import prospectpyxis.customcapacitors.CustomCapacitors;
 import prospectpyxis.customcapacitors.data.CapacitorData;
 
@@ -20,13 +22,6 @@ public class CapacitorRegistry {
 
     public static List<CapacitorData> LOADED_CAPACITORS = new ArrayList<>();
     public static List<String> ID_LIST = new ArrayList<>();
-
-    public static CapacitorData getDataById(String id) {
-        for (CapacitorData data : LOADED_CAPACITORS) {
-            if (data.id.equals(id)) return data;
-        }
-        return null;
-    }
 
     public static void loadCapacitors(File f) {
         LOADED_CAPACITORS.clear();
@@ -66,5 +61,23 @@ public class CapacitorRegistry {
                 CustomCapacitors.logger.error("Error loading capacitor data: " + e.getMessage());
             }
         }
+    }
+
+    public static CapacitorData getDataById(String id) {
+        for (CapacitorData data : LOADED_CAPACITORS) {
+            if (data.id.equals(id)) return data;
+        }
+        return null;
+    }
+
+    public static CapacitorData getDataFromNBT(NBTTagCompound tag) {
+        if (tag == null || tag.hasNoTags()) return null;
+        NBTTagCompound nbt = tag.getCompoundTag("BlockEntityTag");
+        if (nbt.hasNoTags()) return null;
+        return getDataById(nbt.getString("capid"));
+    }
+
+    public static CapacitorData getDataFromItemStack(ItemStack stack) {
+        return getDataFromNBT(stack.getTagCompound());
     }
 }

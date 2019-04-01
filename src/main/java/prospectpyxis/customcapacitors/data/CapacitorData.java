@@ -28,6 +28,8 @@ public class CapacitorData {
     public float inputLossValue = 0;
     @SerializedName("retain_energy")
     public boolean retainEnergy = false;
+    @SerializedName("charging_data")
+    public ChargingData chargingData = new ChargingData();
     @SerializedName("comparator_output")
     public boolean comparatorOutput = false;
 

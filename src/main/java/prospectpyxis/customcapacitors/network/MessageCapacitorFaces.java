@@ -19,7 +19,7 @@ public class MessageCapacitorFaces implements IMessage {
     }
 
     public MessageCapacitorFaces(TileEntityCapacitor te) {
-        this(te.getPos(), te.input_faces);
+        this(te.getPos(), te.io_faces);
     }
 
     public MessageCapacitorFaces() {}
@@ -46,7 +46,7 @@ public class MessageCapacitorFaces implements IMessage {
         public IMessage onMessage(MessageCapacitorFaces message, MessageContext ctx) {
             Minecraft.getMinecraft().addScheduledTask(() -> {
                TileEntityCapacitor te = (TileEntityCapacitor)Minecraft.getMinecraft().world.getTileEntity(message.pos);
-               te.input_faces = message.faces;
+               te.io_faces = message.faces;
             });
             return null;
         }

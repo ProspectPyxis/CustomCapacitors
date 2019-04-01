@@ -11,14 +11,10 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
-import prospectpyxis.customcapacitors.CustomCapacitors;
 import prospectpyxis.customcapacitors.data.CapacitorData;
-import prospectpyxis.customcapacitors.network.MessageCapacitorColor;
-import prospectpyxis.customcapacitors.network.MessageCapacitorFaces;
-import prospectpyxis.customcapacitors.network.MessageReqCapacitorColor;
-import prospectpyxis.customcapacitors.network.MessageReqCapacitorFaces;
+import prospectpyxis.customcapacitors.network.*;
 import prospectpyxis.customcapacitors.registry.CapacitorRegistry;
-import prospectpyxis.pyxislib.energy.EnergyManager;
+import prospectpyxis.pyxislib.capability.energy.EnergyManager;
 
 import javax.annotation.Nullable;
 
@@ -34,7 +30,7 @@ public class TileEntityCapacitor extends TileEntity implements ITickable {
 
     // 0 is empty, 1 is input, 2 is output
     // Follows standard EnumFacing indices, so order is D-U-N-S-W-E
-    public int[] input_faces = new int[]{0, 0, 0, 0, 0, 0};
+    public int[] io_faces = new int[]{0, 0, 0, 0, 0, 0};
     public boolean[] face_connect = new boolean[]{false, false, false, false, false, false};
 
     @Override
@@ -61,11 +57,11 @@ public class TileEntityCapacitor extends TileEntity implements ITickable {
 
         for (EnumFacing ff : EnumFacing.values()) {
             int fi = ff.getIndex();
-            if (input_faces[fi] == 2) {
+            if (io_faces[fi] == 2) {
                 TileEntity te = world.getTileEntity(pos.offset(ff));
                 if (te != null && te.hasCapability(CapabilityEnergy.ENERGY, ff.getOpposite())) {
                     IEnergyStorage oCap = te.getCapability(CapabilityEnergy.ENERGY, ff.getOpposite());
-                    int energySent = oCap.receiveEnergy(data.maxOutputRate, false);
+                    int energySent = oCap.receiveEnergy(Math.min(eContainer.getEnergyStored(), data.maxOutputRate), false);
                     eExtractor.extractEnergy(energySent, false);
                 }
             }
@@ -81,7 +77,7 @@ public class TileEntityCapacitor extends TileEntity implements ITickable {
     public boolean hasCapability(Capability<?> capability, EnumFacing facing)
     {
         if (capability == CapabilityEnergy.ENERGY) {
-            if (facing == null || input_faces[facing.getIndex()] != 0) return true;
+            if (facing == null || io_faces[facing.getIndex()] != 0) return true;
         }
         return super.hasCapability(capability, facing);
     }
@@ -92,8 +88,8 @@ public class TileEntityCapacitor extends TileEntity implements ITickable {
     public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing) {
         if (capability == CapabilityEnergy.ENERGY) {
             if (facing == null) return (T)eContainer;
-            else if (input_faces[facing.getIndex()] == 1) return (T)eReceiver;
-            else if (input_faces[facing.getIndex()] == 2) return (T)eExtractor;
+            else if (io_faces[facing.getIndex()] == 1) return (T)eReceiver;
+            else if (io_faces[facing.getIndex()] == 2) return (T)eExtractor;
         }
         return super.getCapability(capability, facing);
     }
@@ -101,8 +97,8 @@ public class TileEntityCapacitor extends TileEntity implements ITickable {
     @Override
     public void onLoad() {
         if (world.isRemote) {
-            CustomCapacitors.NETWORKING.sendToServer(new MessageReqCapacitorColor(this));
-            CustomCapacitors.NETWORKING.sendToServer(new MessageReqCapacitorFaces(this));
+            NetworkManager.NET.sendToServer(new MessageReqCapacitorColor(this));
+            NetworkManager.NET.sendToServer(new MessageReqCapacitorFaces(this));
         }
 
     }
@@ -117,6 +113,7 @@ public class TileEntityCapacitor extends TileEntity implements ITickable {
     public NBTTagCompound writeToNBT(NBTTagCompound compound) {
         compound.setInteger("energy", eContainer.getEnergyStored());
         compound.setString("capid", data.id);
+        compound.setIntArray("ioFaces", io_faces);
         return super.writeToNBT(compound);
     }
 
@@ -130,7 +127,7 @@ public class TileEntityCapacitor extends TileEntity implements ITickable {
         trimColor = data.getColorTrim();
 
         if (world != null && !world.isRemote) {
-            CustomCapacitors.NETWORKING.sendToAllAround(
+            NetworkManager.NET.sendToAllAround(
                     new MessageCapacitorColor(this),
                     new NetworkRegistry.TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 64)
             );
@@ -152,6 +149,7 @@ public class TileEntityCapacitor extends TileEntity implements ITickable {
                             break;
                         default:
                     }
+                    maxReceive = Math.max(maxReceive, 0);
                     return super.receiveEnergy(maxReceive, simulate);
                 }
             };
@@ -181,11 +179,12 @@ public class TileEntityCapacitor extends TileEntity implements ITickable {
             };
         }
         eContainer.setEnergy(compound.getInteger("energy"));
+        if (compound.hasKey("ioFaces")) io_faces = compound.getIntArray("ioFaces");
     }
 
     public void notifyFaceChanges() {
         if (!world.isRemote) {
-            CustomCapacitors.NETWORKING.sendToAllAround(
+            NetworkManager.NET.sendToAllAround(
                     new MessageCapacitorFaces(this),
                     new NetworkRegistry.TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 64)
             );
